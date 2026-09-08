@@ -1,0 +1,152 @@
+---
+title: "Words Out Report"
+author: MinhNN
+date: 10.09.2026
+format:
+  html:
+      grid:
+          body-width: 1000px
+output:
+  revealjs::revealjs_presentation:
+    theme: sky
+    css: style.css
+    center: true
+    includes:
+      in_header: header.html
+---
+```{r setup, include=FALSE}
+library(knitr)
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
+```
+
+```{r}
+library(tidyverse)
+library(plotly)
+library(kableExtra)
+load("datareport")
+rdx21 <- read.csv("rdx21.csv")
+rdx23 <- read.csv("rdx23.csv")
+
+resourceamount21 <- read.csv("resourceamount21.csv")
+resourceamount23 <- read.csv("resourceamount23.csv")
+```
+
+*Số liệu bản 2.1 lấy từ ngày 01.08.2026 đến 31.08.2026. 
+Số liệu bản 2.3 lấy từ ngày 27.08 đến 07.09.2026*
+
+# Levels & Progressions
+
+## Win Rate, Lose Rate, APU và Drop Rate
+```{r}
+
+kable(subset(d21$level.csv, select = c(level, win.rate, lose.rate, APU, drop.rate)), booktabs = TRUE,  # Uses clean, professional LaTeX lines
+      caption = "Bản 2.1", 
+      align = "ccccc") |>
+  kable_styling(latex_options = c("striped", "hold_position")) |>
+  kableExtra::scroll_box(height = "800px", width = "100%")
+
+kable(subset(d23$level.csv, select = c(level, win.rate, lose.rate, APU, drop.rate)), booktabs = TRUE,  # Uses clean, professional LaTeX lines
+      caption = "Bản 2.3", 
+      align = "ccccc") |>
+  kable_styling(latex_options = c("striped", "hold_position")) |>
+  kableExtra::scroll_box(height = "800px", width = "100%")
+```
+
+\n
+- Bản 2.3 có phần khó hơn, win rate của 9 level đầu có nhiều level dưới 90% và phải retry nhiều lần.
+- Level 5 drop mạnh do inter ads
+- Level 10, 15, và 20 là các level khó, tuy nhiên đang bị quá khó và khả năng cao làm người chơi cảm thấy không tốt.
+- Level 18 không phải level khó nhưng số vẫn tệ.
+
+## Reach by RDx
+
+**Reach by RDX Của bản 2.1 và 2.3**
+```{r}
+#| layout-ncol: 2
+rdx21$user.percent <- rdx21$Total.users / rdx21$Total.users[1]
+rdx23$user.percent <- rdx23$Total.users / rdx23$Total.users[1]
+kables(
+  list(
+    kable(rdx21, booktabs = TRUE,  # Uses clean, professional LaTeX lines
+          align = "ccccc") |>
+      kable_styling(latex_options = c("striped", "hold_position")) |>
+      kableExtra::scroll_box(height = "500px", width = "100%"),
+
+    kable(rdx23, booktabs = TRUE,  # Uses clean, professional LaTeX lines
+          align = "ccccc") |>
+      kable_styling(latex_options = c("striped", "hold_position")) |>
+      kableExtra::scroll_box(height = "500px", width = "100%")
+  ))
+```
+
+
+# Economy & Balance
+
+## Resource Net Amount Per Level
+
+### Coin
+
+```{r}
+#| fig-width: 8
+#| fig-height: 5
+r21 <- resourceamount21 |>
+  pivot_longer(cols = c(earn.volume, spend.volume), names_to = "type", values_to = "amount")
+
+r21 <- r21 |>
+  group_by(level) |>
+  mutate(total = sum(amount)) |>
+  ungroup() |>
+  mutate(tooltip_text = paste0(
+    "Level: ", level, "\n",
+    "Type: ", type, "\n",
+    "Amount: ", amount, "\n",
+    "Total: ", total
+  ))
+
+p <- ggplot(r21, aes(x = level, y = amount, fill = type, text = tooltip_text)) +
+  geom_col(position = "stack") +
+  labs(x = "Level", y = "Amount", fill = "Type", title = "Bản 2.1")
+
+ggplotly(p, tooltip = "text")
+
+r23 <- resourceamount23 |>
+  pivot_longer(cols = c(earn.volume, spend.volume), names_to = "type", values_to = "amount")
+
+r23 <- r23 |>
+  group_by(level) |>
+  mutate(total = sum(amount)) |>
+  ungroup() |>
+  mutate(tooltip_text = paste0(
+    "Level: ", level, "\n",
+    "Type: ", type, "\n",
+    "Amount: ", amount, "\n",
+    "Total: ", total
+  ))
+
+p <- ggplot(r23, aes(x = level, y = amount, fill = type, text = tooltip_text)) +
+  geom_col(position = "stack") +
+  labs(x = "Level", y = "Amount", fill = "Type", title = "Bản 2.3")
+
+ggplotly(p, tooltip = "text")
+```
+
+### Booster
+
+# Monetization
+
+## Reward Ads
+
+## IAP
+
+### Conversion Rate
+
+- CTR thấp
+- Chủ yếu là mua qua các popup ingame, nhiều nhất là Revive
+
+# Actions
+
+## Điều chỉnh độ khó level giai đoạn đầu (đến lv 20)
+
+- Các level dễ đang dễ quá và các level hard đang khó quá, tạo nhịp lên xuống dễ gây sốc và nản.
+
+## Tutorial
