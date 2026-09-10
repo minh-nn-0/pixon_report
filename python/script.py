@@ -239,7 +239,7 @@ datasets = {
 }
 
 app_name = "Words Out!"
-time_range = "2026-08-01 : 2026-08-31"
+time_range = ["2026-07-28","2026-09-10"]
 for (i, name) in datasets.items():
     cols = get_dataset_schema(i)
     df = pull_dataset(
@@ -259,8 +259,8 @@ for (i, name) in datasets.items():
          filters = [
             {"col": "app_id", "op": "in", "val": app},
         ],
-        time_range = time_range,
+        where = f"`event_date` >= toDate('{time_range[0]}') AND `event_date` < toDate('{time_range[1]}')",
         row_limit = 300000)
-    filename = f"../data/{app_name}_{time_range.replace(" : ", "_")}_{name}.csv"
+    filename = f"../data/{app_name}_{time_range[0]}_{time_range[1]}=={name}.csv"
     d.to_csv(filename, index=False)
     print("Written ", filename);
