@@ -1,0 +1,33 @@
+---
+title: "IAP REPORT WORDS OUT"
+format: html
+author: Minh NN
+date: 2026-11-09
+execute:
+  echo: false
+  warning: false
+  message: false
+
+cap-location: top
+
+---
+<style>
+.caption, caption, .table-caption {
+  text-align: left;
+}
+</style>
+```{r setup, include = FALSE}
+library(tidyverse)
+library(kableExtra)
+dailystats <- read_csv("../data/Words Out!_2026-07-28_2026-09-10==daily_stats.csv")
+cohort_retention <- read_csv("../data/Words Out!_2026-07-28_2026-09-10==cohort_retention.csv")
+```
+
+# OVERVIEW
+
+::: {style="text-align: center;"}
+**RR của 2 phiên bản trong 7 ngày đầu rollout**
+:::
+```{r}
+
+```
