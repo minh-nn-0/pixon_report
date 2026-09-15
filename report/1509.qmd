@@ -198,17 +198,37 @@ ggplotly(
     labs(fill = "pct_bucket", x = "level", y = "users", title = "Drop progress percentage of exit users")
     + facet_wrap(~version)
 )
+```
+
+<details> <summary><span style="font-size:1em;font-weight:bold;">Độ khó</span></summary>
+
+```{r}
 
 diff <- function (x) {
-    return(mutate(x, winrate =  drop_users * 100 / start_users))
+    return(mutate(x, win_rate = win_count * 100 / start_count, lose_rate = lose_count * 100 / start_count, winAPU = win_attempts / win_users, lose_per_users = lose_count / lose_users, APU = start_count / start_users))
 }
 
-drop10.21 <- drop10(f10lv21)
-drop10.23 <- drop10(f10lv23)
+diff10.21 <- diff(f10lv21)
+diff10.23 <- diff(f10lv23)
+
+ggplotly(
+    ggplot(rbind(diff10.21, diff10.23) |> pivot_longer(cols = c(APU, lose_per_users, winAPU), names_to = "apu", values_to = "value"), aes(x = factor(level), y = value, fill = apu)) + geom_col(position = "dodge")
+    + facet_wrap(~version)
+    + labs(title = "APU")
+)
+
+ggplotly(
+    ggplot(rbind(diff10.21, diff10.23) |> pivot_longer(cols = c(win_rate, lose_rate), names_to = "WL_rate", values_to = "value"), aes(x = factor(level), y = value, fill = WL_rate)) + geom_col(position = "dodge")
+    + facet_wrap(~version)
+    + labs(title = "Win & Lose Rate")
+)
 ```
+</details>
+
 <details><summary>Kết luận</summary>
 - Đa số các level đều không có lí do chủ yếu cho việc drop game. Thường là drop ở khoảng đầu sau khi đã xong 1 box.
 - Các level giống nhau, chỉ đổi vị trí tutorial nhưng hành vi drop cũng đã khác (Vd level 4, tỉ lệ người chơi thoát game mà không vì lí do gì cao hơn ở bản 2.1)
+- Xuất hiện sự khác nhau nhẹ trong độ khó game.
 
 => Chưa kết luận được lí do cho sự khác nhau này là gì. Giải pháp hiện tại nên là AB test lại một bản revert lại tutorial về vị trí như bản 2.1
 
