@@ -2,7 +2,7 @@
 title: "PIXON REPORT"
 format: html
 author: Minh NN
-date: 2026-15-09
+date: 2026-09-15
 execute:
   echo: false
   warning: false
