@@ -239,7 +239,7 @@ datasets = {
 }
 
 app_name = "Words Out!"
-time_range = ["2026-07-28","2026-09-10"]
+time_range = ["2026-07-28","2026-09-15"]
 for (i, name) in datasets.items():
     cols = get_dataset_schema(i)
     df = pull_dataset(
